@@ -82,6 +82,16 @@ function movement(player, left, right, up) {
         break;
     }
   });
+  document.addEventListener("keyup", (e) => {
+    switch (e.key) {
+      case left:
+        player.velocity.x = 0;
+        break;
+      case right:
+        player.velocity.x = 0;
+        break;
+    }
+  });
 }
 
 // Animeringsfunktion
