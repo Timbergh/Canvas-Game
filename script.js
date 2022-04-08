@@ -10,16 +10,29 @@ console.log(myCanvas.width, myCanvas.height);
 const gravity = 0.7;
 
 class Players {
-  constructor({ position, velocity, size, color }) {
+  constructor({ position, velocity, size, color, offeset }) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
     this.color = color;
+    this.offeset = offeset;
+    this.attack = {
+      position: this.position,
+      width: 110,
+      height: 40,
+    };
   }
 
   render() {
     c.fillStyle = this.color;
     c.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+
+    c.fillRect(
+      this.attack.position.x - this.offeset,
+      this.attack.position.y,
+      this.attack.width,
+      this.attack.height
+    );
   }
 
   update() {
@@ -34,17 +47,14 @@ class Players {
       this.velocity.y += gravity;
     }
     // Right wall collision
-    if (this.position.x + this.size.x + this.velocity.x >= myCanvas.width) {
-      if (this.position.x + this.size.x > myCanvas.width) {
-        this.position.x -= this.velocity.x;
-      }
+    if (this.position.x + this.size.x / 2 > myCanvas.width) {
+      this.position.x -= this.velocity.x;
     }
     // Left wall collision
-    if (this.position.x < 0) {
-      if (this.position.x + this.size.x < myCanvas.width) {
-        this.position.x -= this.velocity.x;
-      }
+    if (this.position.x + this.size.x / 2 < 0) {
+      this.position.x -= this.velocity.x;
     }
+    // Attack collision
   }
 }
 
@@ -62,6 +72,7 @@ const player1 = new Players({
     y: 150,
   },
   color: "purple",
+  offeset: 0,
 });
 
 const player2 = new Players({
@@ -78,6 +89,7 @@ const player2 = new Players({
     y: 150,
   },
   color: "green",
+  offeset: 60,
 });
 
 let aPressed = false;
@@ -91,10 +103,12 @@ document.addEventListener("keydown", (e) => {
     case "a":
       aPressed = true;
       player1.velocity.x = -5;
+      player1.offeset = 60;
       break;
     case "d":
       dPressed = true;
       player1.velocity.x = 5;
+      player1.offeset = 0;
       break;
     case "w":
       if (
@@ -126,10 +140,12 @@ document.addEventListener("keydown", (e) => {
     case "ArrowLeft":
       LeftArrowPressed = true;
       player2.velocity.x = -5;
+      player2.offeset = 60;
       break;
     case "ArrowRight":
       RightArrowPressed = true;
       player2.velocity.x = 5;
+      player2.offeset = 0;
       break;
     case "ArrowUp":
       if (
