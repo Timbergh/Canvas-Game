@@ -54,7 +54,6 @@ class Players {
     if (this.position.x + this.size.x / 2 < 0) {
       this.position.x -= this.velocity.x;
     }
-    // Attack collision
   }
 }
 
@@ -117,6 +116,9 @@ document.addEventListener("keydown", (e) => {
       )
         player1.velocity.y = -20;
       break;
+    case "s":
+      attackCollision(player1, player2);
+      break;
   }
 });
 document.addEventListener("keyup", (e) => {
@@ -154,6 +156,9 @@ document.addEventListener("keydown", (e) => {
       )
         player2.velocity.y = -20;
       break;
+    case "ArrowDown":
+      attackCollision(player2, player1);
+      break;
   }
 });
 document.addEventListener("keyup", (e) => {
@@ -172,6 +177,29 @@ document.addEventListener("keyup", (e) => {
       break;
   }
 });
+
+function attackCollision(player, enemy) {
+  // Attack collision
+  if (player.offeset > 0) {
+    if (
+      player.attack.position.x - player.attack.width <= enemy.position.x &&
+      player.attack.position.x >= enemy.position.x - enemy.size.x &&
+      player.attack.position.y + player.attack.height >= enemy.position.y &&
+      player.attack.position.y <= enemy.position.y + enemy.size.y
+    ) {
+      console.log("!");
+    }
+  } else {
+    if (
+      player.attack.position.x + player.attack.width >= enemy.position.x &&
+      player.attack.position.x <= enemy.position.x + enemy.size.x &&
+      player.attack.position.y + player.attack.height >= enemy.position.y &&
+      player.attack.position.y <= enemy.position.y + enemy.size.y
+    ) {
+      console.log("!");
+    }
+  }
+}
 
 // Animeringsfunktion
 function animate() {
