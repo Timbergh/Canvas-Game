@@ -35,7 +35,6 @@ class Players {
         this.attack.width,
         this.attack.height
       );
-      this.attacking = false;
     }
   }
 
@@ -58,6 +57,13 @@ class Players {
     if (this.position.x + this.size.x / 2 < 0) {
       this.position.x -= this.velocity.x;
     }
+  }
+
+  attackFunction() {
+    this.attacking = true;
+    setTimeout(() => {
+      this.attacking = false;
+    }, 100);
   }
 }
 
@@ -121,7 +127,7 @@ document.addEventListener("keydown", (e) => {
         player1.velocity.y = -20;
       break;
     case "s":
-      player1.attacking = true;
+      player1.attackFunction();
       attackCollision(player1, player2);
       break;
   }
@@ -162,7 +168,7 @@ document.addEventListener("keydown", (e) => {
         player2.velocity.y = -20;
       break;
     case "ArrowDown":
-      player2.attacking = true;
+      player2.attackFunction();
       attackCollision(player2, player1);
       break;
   }
@@ -191,7 +197,8 @@ function attackCollision(player, enemy) {
       player.attack.position.x - player.attack.width <= enemy.position.x &&
       player.attack.position.x >= enemy.position.x - enemy.size.x &&
       player.attack.position.y + player.attack.height >= enemy.position.y &&
-      player.attack.position.y <= enemy.position.y + enemy.size.y
+      player.attack.position.y <= enemy.position.y + enemy.size.y &&
+      player.attacking
     ) {
       console.log("!");
     }
@@ -200,7 +207,8 @@ function attackCollision(player, enemy) {
       player.attack.position.x + player.attack.width >= enemy.position.x &&
       player.attack.position.x <= enemy.position.x + enemy.size.x &&
       player.attack.position.y + player.attack.height >= enemy.position.y &&
-      player.attack.position.y <= enemy.position.y + enemy.size.y
+      player.attack.position.y <= enemy.position.y + enemy.size.y &&
+      player.attacking
     ) {
       console.log("!");
     }
