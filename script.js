@@ -21,18 +21,22 @@ class Players {
       width: 110,
       height: 40,
     };
+    this.attacking;
   }
 
   render() {
     c.fillStyle = this.color;
     c.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
 
-    c.fillRect(
-      this.attack.position.x - this.offeset,
-      this.attack.position.y,
-      this.attack.width,
-      this.attack.height
-    );
+    if (this.attacking) {
+      c.fillRect(
+        this.attack.position.x - this.offeset,
+        this.attack.position.y,
+        this.attack.width,
+        this.attack.height
+      );
+      this.attacking = false;
+    }
   }
 
   update() {
@@ -117,6 +121,7 @@ document.addEventListener("keydown", (e) => {
         player1.velocity.y = -20;
       break;
     case "s":
+      player1.attacking = true;
       attackCollision(player1, player2);
       break;
   }
@@ -157,6 +162,7 @@ document.addEventListener("keydown", (e) => {
         player2.velocity.y = -20;
       break;
     case "ArrowDown":
+      player2.attacking = true;
       attackCollision(player2, player1);
       break;
   }
