@@ -126,7 +126,7 @@ document.addEventListener("keydown", (e) => {
       )
         player1.velocity.y = -20;
       break;
-    case "s":
+    case "f":
       player1.attackFunction();
       attackCollision(player1, player2);
       break;
@@ -167,7 +167,7 @@ document.addEventListener("keydown", (e) => {
       )
         player2.velocity.y = -20;
       break;
-    case "ArrowDown":
+    case ".":
       player2.attackFunction();
       attackCollision(player2, player1);
       break;
