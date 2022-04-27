@@ -23,6 +23,7 @@ class Players {
     };
     this.attacking;
     this.knockbacked;
+    this.combo = 0;
   }
 
   render() {
@@ -50,6 +51,7 @@ class Players {
     } else {
       this.velocity.y += gravity;
     }
+    // Stop after knockback
     if (
       this.position.y + this.size.y + this.velocity.y > myCanvas.height &&
       this.knockbacked
@@ -61,6 +63,7 @@ class Players {
     if (this.position.x + this.size.x / 2 >= myCanvas.width) {
       this.position.x -= this.velocity.x;
     }
+    // Right collision + knockback fix
     if (this.position.x + this.size.x / 2 + 0.1 > myCanvas.width) {
       this.position.x = myCanvas.width - this.size.x;
     }
@@ -68,6 +71,7 @@ class Players {
     if (this.position.x + this.size.x / 2 <= 0) {
       this.position.x -= this.velocity.x;
     }
+    // left collision + knockback fix
     if (this.position.x + this.size.x / 2 - 0.1 < 0) {
       this.position.x = 0;
     }
@@ -124,15 +128,17 @@ player1.knockbacked = false;
 player2.knockbacked = false;
 function knockback(player, enemy) {
   if (player.offset == 0) {
-    enemy.velocity.x += 10;
-    enemy.velocity.y += -8;
+    enemy.velocity.x += 5;
+    enemy.velocity.y += -3;
     enemy.knockbacked = true;
   } else {
-    enemy.velocity.x += -10;
-    enemy.velocity.y += -8;
+    enemy.velocity.x += -5;
+    enemy.velocity.y += -3;
     enemy.knockbacked = true;
   }
 }
+
+function attackCombo() {}
 
 let collision = false;
 function attackCollision(player, enemy) {
@@ -145,8 +151,9 @@ function attackCollision(player, enemy) {
       player.attack.position.y <= enemy.position.y + enemy.size.y &&
       player.attacking
     ) {
-      console.log("!");
       collision = true;
+      player.combo += 1;
+      console.log(player.combo);
     }
   } else {
     if (
@@ -156,8 +163,9 @@ function attackCollision(player, enemy) {
       player.attack.position.y <= enemy.position.y + enemy.size.y &&
       player.attacking
     ) {
-      console.log("!");
       collision = true;
+      player.combo += 1;
+      console.log(player.combo);
     }
   }
 }
@@ -176,14 +184,14 @@ let attackKeyPressed2 = false;
 document.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "a":
-      if (player1.knockbacked == false) {
+      if (!player1.knockbacked) {
         aPressed = true;
         player1.velocity.x = -5;
         player1.offset = 60;
       }
       break;
     case "d":
-      if (player1.knockbacked == false) {
+      if (!player1.knockbacked) {
         dPressed = true;
         player1.velocity.x = 5;
         player1.offset = 0;
@@ -212,7 +220,7 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
   switch (e.key) {
     case "a":
-      if (player1.knockbacked == false) {
+      if (!player1.knockbacked) {
         if (dPressed) {
           player1.velocity.x = 5;
         } else player1.velocity.x = 0;
@@ -220,7 +228,7 @@ document.addEventListener("keyup", (e) => {
       }
       break;
     case "d":
-      if (player1.knockbacked == false) {
+      if (!player1.knockbacked) {
         if (aPressed) {
           player1.velocity.x = -5;
         } else player1.velocity.x = 0;
@@ -229,20 +237,21 @@ document.addEventListener("keyup", (e) => {
       break;
     case "s":
       attackKeyPressed1 = false;
+      break;
   }
 });
 
 document.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowLeft":
-      if (player2.knockbacked == false) {
+      if (!player2.knockbacked) {
         LeftArrowPressed = true;
         player2.velocity.x = -5;
         player2.offset = 60;
       }
       break;
     case "ArrowRight":
-      if (player2.knockbacked == false) {
+      if (!player2.knockbacked) {
         RightArrowPressed = true;
         player2.velocity.x = 5;
         player2.offset = 0;
@@ -271,7 +280,7 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
   switch (e.key) {
     case "ArrowLeft":
-      if (player2.knockbacked == false) {
+      if (!player2.knockbacked) {
         if (RightArrowPressed) {
           player2.velocity.x = 5;
         } else player2.velocity.x = 0;
@@ -279,7 +288,7 @@ document.addEventListener("keyup", (e) => {
       }
       break;
     case "ArrowRight":
-      if (player1.knockbacked == false) {
+      if (!player1.knockbacked) {
         if (LeftArrowPressed) {
           player2.velocity.x = -5;
         } else player2.velocity.x = 0;
@@ -288,6 +297,7 @@ document.addEventListener("keyup", (e) => {
       break;
     case "ArrowDown":
       attackKeyPressed2 = false;
+      break;
   }
 });
 
