@@ -10,7 +10,7 @@ console.log(myCanvas.width, myCanvas.height);
 const gravity = 0.7;
 
 class Players {
-  constructor({ position, velocity, size, color, offset }) {
+  constructor({ position, velocity, size, color, offset, dmg }) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
@@ -24,6 +24,7 @@ class Players {
     this.attacking;
     this.knockbacked;
     this.combo = 0;
+    this.dmg = dmg;
   }
 
   render() {
@@ -85,6 +86,30 @@ class Players {
   }
 }
 
+const hpBar1 = new Players({
+  position: {
+    x: 20,
+    y: 20,
+  },
+  size: {
+    x: 400,
+    y: 30,
+  },
+  color: "red",
+});
+
+const hpBar2 = new Players({
+  position: {
+    x: myCanvas.width - 420,
+    y: 20,
+  },
+  size: {
+    x: 400,
+    y: 30,
+  },
+  color: "red",
+});
+
 const player1 = new Players({
   position: {
     x: 0,
@@ -100,6 +125,7 @@ const player1 = new Players({
   },
   color: "purple",
   offset: 0,
+  dmg: 10,
 });
 
 const player2 = new Players({
@@ -117,6 +143,7 @@ const player2 = new Players({
   },
   color: "green",
   offset: 60,
+  dmg: 10,
 });
 
 let aPressed = false;
@@ -128,20 +155,46 @@ player1.knockbacked = false;
 player2.knockbacked = false;
 function knockback(player, enemy) {
   if (player.offset == 0) {
-    enemy.velocity.x += 5;
-    enemy.velocity.y += -3;
+    if (player.combo == 1) {
+      enemy.velocity.x += 2;
+      enemy.velocity.y += -3;
+    } else if (player.combo == 2) {
+      enemy.velocity.x += 5;
+      enemy.velocity.y += -3;
+    } else {
+      enemy.velocity.x += 10;
+      enemy.velocity.y += -4;
+    }
     enemy.knockbacked = true;
   } else {
-    enemy.velocity.x += -5;
-    enemy.velocity.y += -3;
+    if (player.combo == 1) {
+      enemy.velocity.x += -2;
+      enemy.velocity.y += -3;
+    } else if (player.combo == 2) {
+      enemy.velocity.x += -5;
+      enemy.velocity.y += -3;
+    } else {
+      enemy.velocity.x += -10;
+      enemy.velocity.y += -4;
+    }
     enemy.knockbacked = true;
   }
 }
 
-function attackCombo() {}
+function comboTimer(player) {
+  let timeleft = 5;
+  let startComboTimer = setInterval(function () {
+    if (timeleft <= 1) {
+      clearInterval(startComboTimer);
+      player.combo = 0;
+    }
+    timeleft -= 1;
+    console.log("Timer ", timeleft);
+  }, 1000);
+}
 
 let collision = false;
-function attackCollision(player, enemy) {
+function attackCollision(player, enemy, hpEnemy) {
   // Attack collision
   if (player.offset > 0) {
     if (
@@ -152,7 +205,12 @@ function attackCollision(player, enemy) {
       player.attacking
     ) {
       collision = true;
+      hpEnemy.size.x -= player.dmg;
       player.combo += 1;
+      if (player.combo > 3) {
+        player.combo = 1;
+      }
+      comboTimer(player);
       console.log(player.combo);
     }
   } else {
@@ -164,7 +222,12 @@ function attackCollision(player, enemy) {
       player.attacking
     ) {
       collision = true;
+      hpEnemy.size.x -= player.dmg;
       player.combo += 1;
+      if (player.combo > 3) {
+        player.combo = 1;
+      }
+      comboTimer(player);
       console.log(player.combo);
     }
   }
@@ -176,6 +239,8 @@ function animate() {
   c.clearRect(0, 0, innerWidth, innerHeight); // Denna rad rensar skärmen
   player1.update();
   player2.update();
+  hpBar1.render();
+  hpBar2.render();
 }
 
 //Användarinput
@@ -188,15 +253,15 @@ document.addEventListener("keydown", (e) => {
         aPressed = true;
         player1.velocity.x = -5;
         player1.offset = 60;
+        break;
       }
-      break;
     case "d":
       if (!player1.knockbacked) {
         dPressed = true;
         player1.velocity.x = 5;
         player1.offset = 0;
+        break;
       }
-      break;
     case "w":
       if (
         player1.position.y + player1.size.y + player1.velocity.y >=
@@ -208,7 +273,7 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed1) {
         attackKeyPressed1 = true;
         player1.attackFunction();
-        attackCollision(player1, player2);
+        attackCollision(player1, player2, hpBar2);
         if (collision) {
           knockback(player1, player2);
         }
@@ -224,16 +289,16 @@ document.addEventListener("keyup", (e) => {
         if (dPressed) {
           player1.velocity.x = 5;
         } else player1.velocity.x = 0;
-        aPressed = false;
       }
+      aPressed = false;
       break;
     case "d":
       if (!player1.knockbacked) {
         if (aPressed) {
           player1.velocity.x = -5;
         } else player1.velocity.x = 0;
-        dPressed = false;
       }
+      dPressed = false;
       break;
     case "s":
       attackKeyPressed1 = false;
@@ -248,15 +313,15 @@ document.addEventListener("keydown", (e) => {
         LeftArrowPressed = true;
         player2.velocity.x = -5;
         player2.offset = 60;
+        break;
       }
-      break;
     case "ArrowRight":
       if (!player2.knockbacked) {
         RightArrowPressed = true;
         player2.velocity.x = 5;
         player2.offset = 0;
+        break;
       }
-      break;
     case "ArrowUp":
       if (
         player2.position.y + player2.size.y + player2.velocity.y >=
@@ -268,13 +333,13 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed2) {
         attackKeyPressed2 = true;
         player2.attackFunction();
-        attackCollision(player2, player1);
+        attackCollision(player2, player1, hpBar1);
         if (collision) {
           knockback(player2, player1);
         }
         collision = false;
+        break;
       }
-      break;
   }
 });
 document.addEventListener("keyup", (e) => {
@@ -284,16 +349,16 @@ document.addEventListener("keyup", (e) => {
         if (RightArrowPressed) {
           player2.velocity.x = 5;
         } else player2.velocity.x = 0;
-        LeftArrowPressed = false;
       }
+      LeftArrowPressed = false;
       break;
     case "ArrowRight":
-      if (!player1.knockbacked) {
+      if (!player2.knockbacked) {
         if (LeftArrowPressed) {
           player2.velocity.x = -5;
         } else player2.velocity.x = 0;
-        RightArrowPressed = false;
       }
+      RightArrowPressed = false;
       break;
     case "ArrowDown":
       attackKeyPressed2 = false;
