@@ -112,8 +112,8 @@ const hpBar2 = new Players({
 
 const player1 = new Players({
   position: {
-    x: 0,
-    y: 0,
+    x: 300,
+    y: 200,
   },
   velocity: {
     x: 0,
@@ -130,8 +130,8 @@ const player1 = new Players({
 
 const player2 = new Players({
   position: {
-    x: 910,
-    y: 0,
+    x: 600,
+    y: 200,
   },
   velocity: {
     x: 0,
@@ -183,18 +183,24 @@ function knockback(player, enemy) {
 
 function comboTimer(player) {
   let timeleft = 5;
-  let startComboTimer = setInterval(function () {
+  startComboTimer = setInterval(function () {
     if (timeleft <= 1) {
       clearInterval(startComboTimer);
       player.combo = 0;
     }
     timeleft -= 1;
+    i = 2;
+    while (startComboTimer > 0) {
+      clearInterval(startComboTimer - i);
+      startComboTimer - i;
+    }
+
     console.log("Timer ", timeleft);
   }, 1000);
 }
 
 let collision = false;
-function attackCollision(player, enemy, hpEnemy) {
+function attackCollision(player, enemy, hpEnemy, move) {
   // Attack collision
   if (player.offset > 0) {
     if (
@@ -206,10 +212,12 @@ function attackCollision(player, enemy, hpEnemy) {
     ) {
       collision = true;
       hpEnemy.size.x -= player.dmg;
+      hpEnemy.position.x += move;
       player.combo += 1;
       if (player.combo > 3) {
         player.combo = 1;
       }
+
       comboTimer(player);
       console.log(player.combo);
     }
@@ -223,10 +231,12 @@ function attackCollision(player, enemy, hpEnemy) {
     ) {
       collision = true;
       hpEnemy.size.x -= player.dmg;
+      hpEnemy.position.x += move;
       player.combo += 1;
       if (player.combo > 3) {
         player.combo = 1;
       }
+
       comboTimer(player);
       console.log(player.combo);
     }
@@ -273,7 +283,7 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed1) {
         attackKeyPressed1 = true;
         player1.attackFunction();
-        attackCollision(player1, player2, hpBar2);
+        attackCollision(player1, player2, hpBar2, 10);
         if (collision) {
           knockback(player1, player2);
         }
@@ -333,7 +343,7 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed2) {
         attackKeyPressed2 = true;
         player2.attackFunction();
-        attackCollision(player2, player1, hpBar1);
+        attackCollision(player2, player1, hpBar1, 0);
         if (collision) {
           knockback(player2, player1);
         }
