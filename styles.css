@@ -5,6 +5,8 @@
 
 body {
   margin: 0px;
+  display: flex;
+  justify-content: center;
 }
 
 #myCanvas {
@@ -15,4 +17,51 @@ body {
   right: 50%;
   top: 50%;
   transform: translate(50%, -50%);
+}
+
+#canvas-container {
+  position: relative;
+  width: 960px;
+  height: 540px;
+  margin-top: 2.5%;
+}
+
+#hp-container {
+  position: absolute;
+  display: flex;
+  width: 100%;
+}
+
+.hp {
+  background-color: red;
+  height: 30px;
+  width: 100%;
+  height: 30px;
+  transition: width 0.5s ease;
+}
+
+#hp2::after {
+  content: "";
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.452);
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+#hp1::before {
+  content: "";
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.452);
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.relative {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin: 30px;
 }

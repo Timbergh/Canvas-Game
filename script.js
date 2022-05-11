@@ -2,6 +2,8 @@
 window.focus;
 let myCanvas = document.getElementById("myCanvas");
 let c = myCanvas.getContext("2d");
+let hp1 = document.getElementById("hp1");
+let hp2 = document.getElementById("hp2");
 myCanvas.width = 960;
 myCanvas.height = 540;
 
@@ -10,7 +12,7 @@ console.log(myCanvas.width, myCanvas.height);
 const gravity = 0.7;
 
 class Players {
-  constructor({ position, velocity, size, color, offset, dmg }) {
+  constructor({ position, velocity, size, color, offset, hp }) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
@@ -24,7 +26,7 @@ class Players {
     this.attacking;
     this.knockbacked;
     this.combo = 0;
-    this.dmg = dmg;
+    this.hp = hp;
   }
 
   render() {
@@ -86,30 +88,6 @@ class Players {
   }
 }
 
-const hpBar1 = new Players({
-  position: {
-    x: 20,
-    y: 20,
-  },
-  size: {
-    x: 400,
-    y: 30,
-  },
-  color: "red",
-});
-
-const hpBar2 = new Players({
-  position: {
-    x: myCanvas.width - 420,
-    y: 20,
-  },
-  size: {
-    x: 400,
-    y: 30,
-  },
-  color: "red",
-});
-
 const player1 = new Players({
   position: {
     x: 300,
@@ -125,7 +103,7 @@ const player1 = new Players({
   },
   color: "purple",
   offset: 0,
-  dmg: 10,
+  hp: 100,
 });
 
 const player2 = new Players({
@@ -143,7 +121,7 @@ const player2 = new Players({
   },
   color: "green",
   offset: 60,
-  dmg: 10,
+  hp: 100,
 });
 
 let aPressed = false;
@@ -181,26 +159,20 @@ function knockback(player, enemy) {
   }
 }
 
-function comboTimer(player) {
-  let timeleft = 5;
-  startComboTimer = setInterval(function () {
-    if (timeleft <= 1) {
-      clearInterval(startComboTimer);
-      player.combo = 0;
-    }
-    timeleft -= 1;
-    i = 2;
-    while (startComboTimer > 0) {
-      clearInterval(startComboTimer - i);
-      startComboTimer - i;
-    }
-
-    console.log("Timer ", timeleft);
-  }, 1000);
-}
+// function comboTimer(player) {
+//   let timeleft = 3;
+//   startComboTimer = setInterval(function () {
+//     if (timeleft <= 1) {
+//       clearInterval(startComboTimer);
+//       player.combo = 0;
+//     }
+//     timeleft -= 1;
+//     console.log("Timer ", timeleft);
+//   }, 1000);
+// }
 
 let collision = false;
-function attackCollision(player, enemy, hpEnemy, move) {
+function attackCollision(player, enemy) {
   // Attack collision
   if (player.offset > 0) {
     if (
@@ -211,15 +183,13 @@ function attackCollision(player, enemy, hpEnemy, move) {
       player.attacking
     ) {
       collision = true;
-      hpEnemy.size.x -= player.dmg;
-      hpEnemy.position.x += move;
       player.combo += 1;
       if (player.combo > 3) {
         player.combo = 1;
       }
-
-      comboTimer(player);
       console.log(player.combo);
+
+      //comboTimer(player);
     }
   } else {
     if (
@@ -230,15 +200,13 @@ function attackCollision(player, enemy, hpEnemy, move) {
       player.attacking
     ) {
       collision = true;
-      hpEnemy.size.x -= player.dmg;
-      hpEnemy.position.x += move;
       player.combo += 1;
       if (player.combo > 3) {
         player.combo = 1;
       }
-
-      comboTimer(player);
       console.log(player.combo);
+
+      //comboTimer(player);
     }
   }
 }
@@ -249,8 +217,6 @@ function animate() {
   c.clearRect(0, 0, innerWidth, innerHeight); // Denna rad rensar skärmen
   player1.update();
   player2.update();
-  hpBar1.render();
-  hpBar2.render();
 }
 
 //Användarinput
@@ -283,9 +249,11 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed1) {
         attackKeyPressed1 = true;
         player1.attackFunction();
-        attackCollision(player1, player2, hpBar2, 10);
+        attackCollision(player1, player2);
         if (collision) {
           knockback(player1, player2);
+          player2.hp -= 10;
+          hp2.style.width = player2.hp + "%";
         }
         collision = false;
       }
@@ -343,9 +311,11 @@ document.addEventListener("keydown", (e) => {
       if (!attackKeyPressed2) {
         attackKeyPressed2 = true;
         player2.attackFunction();
-        attackCollision(player2, player1, hpBar1, 0);
+        attackCollision(player2, player1);
         if (collision) {
           knockback(player2, player1);
+          player1.hp -= 10;
+          hp1.style.width = player1.hp + "%";
         }
         collision = false;
         break;
