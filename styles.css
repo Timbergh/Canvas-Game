@@ -30,6 +30,7 @@ body {
   position: absolute;
   display: flex;
   width: 100%;
+  z-index: 1;
 }
 
 .hp {
@@ -49,7 +50,7 @@ body {
   z-index: -1;
 }
 
-#hp1::before {
+#hp1::after {
   content: "";
   position: absolute;
   background-color: rgba(255, 0, 0, 0.452);

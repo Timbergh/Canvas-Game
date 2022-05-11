@@ -11,6 +11,29 @@ console.log(myCanvas.width, myCanvas.height);
 
 const gravity = 0.7;
 
+class Sprites {
+  constructor({ position, imageSrc, size }) {
+    this.position = position;
+    this.image = new Image();
+    this.image.src = imageSrc;
+    this.size = size;
+  }
+
+  draw() {
+    c.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y,
+      this.size.x,
+      this.size.y
+    );
+  }
+
+  update() {
+    this.draw();
+  }
+}
+
 class Players {
   constructor({ position, velocity, size, color, offset, hp }) {
     this.position = position;
@@ -49,14 +72,17 @@ class Players {
     this.position.y += this.velocity.y;
 
     // Floor collision
-    if (this.position.y + this.size.y + this.velocity.y > myCanvas.height) {
+    if (
+      this.position.y + this.size.y + this.velocity.y >
+      myCanvas.height - 40
+    ) {
       this.velocity.y = 0;
     } else {
       this.velocity.y += gravity;
     }
     // Stop after knockback
     if (
-      this.position.y + this.size.y + this.velocity.y > myCanvas.height &&
+      this.position.y + this.size.y + this.velocity.y > myCanvas.height - 40 &&
       this.knockbacked
     ) {
       this.velocity.x = 0;
@@ -87,6 +113,18 @@ class Players {
     }, 100);
   }
 }
+
+const background = new Sprites({
+  position: {
+    x: 0,
+    y: -100,
+  },
+  imageSrc: "./background.png",
+  size: {
+    x: 960,
+    y: 640,
+  },
+});
 
 const player1 = new Players({
   position: {
@@ -215,6 +253,7 @@ function attackCollision(player, enemy) {
 function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, innerWidth, innerHeight); // Denna rad rensar skärmen
+  background.update();
   player1.update();
   player2.update();
 }
@@ -241,7 +280,7 @@ document.addEventListener("keydown", (e) => {
     case "w":
       if (
         player1.position.y + player1.size.y + player1.velocity.y >=
-        myCanvas.height
+        myCanvas.height - 40
       )
         player1.velocity.y = -15;
       break;
@@ -303,7 +342,7 @@ document.addEventListener("keydown", (e) => {
     case "ArrowUp":
       if (
         player2.position.y + player2.size.y + player2.velocity.y >=
-        myCanvas.height
+        myCanvas.height - 40
       )
         player2.velocity.y = -15;
       break;
