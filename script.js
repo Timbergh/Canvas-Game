@@ -10,6 +10,7 @@ myCanvas.height = 540;
 console.log(myCanvas.width, myCanvas.height);
 
 const gravity = 0.7;
+let end = false;
 
 class Sprites {
   constructor({ position, imageSrc, size }) {
@@ -197,18 +198,6 @@ function knockback(player, enemy) {
   }
 }
 
-// function comboTimer(player) {
-//   let timeleft = 3;
-//   startComboTimer = setInterval(function () {
-//     if (timeleft <= 1) {
-//       clearInterval(startComboTimer);
-//       player.combo = 0;
-//     }
-//     timeleft -= 1;
-//     console.log("Timer ", timeleft);
-//   }, 1000);
-// }
-
 let collision = false;
 function attackCollision(player, enemy) {
   // Attack collision
@@ -226,8 +215,6 @@ function attackCollision(player, enemy) {
         player.combo = 1;
       }
       console.log(player.combo);
-
-      //comboTimer(player);
     }
   } else {
     if (
@@ -243,8 +230,6 @@ function attackCollision(player, enemy) {
         player.combo = 1;
       }
       console.log(player.combo);
-
-      //comboTimer(player);
     }
   }
 }
@@ -256,50 +241,112 @@ function animate() {
   background.update();
   player1.update();
   player2.update();
+
+  if (player1.hp <= 0 && player2.hp <= 0) {
+    c.font = "50px Permanent Marker";
+    c.fillStyle = "red";
+    c.textAlign = "center";
+    c.fillText("TIE", myCanvas.width / 2, myCanvas.height / 2);
+    end = true;
+  } else if (player1.hp <= 0) {
+    c.font = "50px Permanent Marker";
+    c.fillStyle = "red";
+    c.textAlign = "center";
+    c.fillText("PLAYER 2 WINS", myCanvas.width / 2, myCanvas.height / 2);
+    end = true;
+  } else if (player2.hp <= 0) {
+    c.font = "50px Permanent Marker";
+    c.fillStyle = "red";
+    c.textAlign = "center";
+    c.fillText("PLAYER 1 WINS", myCanvas.width / 2, myCanvas.height / 2);
+    end = true;
+  }
 }
 
 //Användarinput
 let attackKeyPressed1 = false;
 let attackKeyPressed2 = false;
 document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "a":
-      if (!player1.knockbacked) {
-        aPressed = true;
-        player1.velocity.x = -5;
-        player1.offset = 60;
-        break;
-      }
-    case "d":
-      if (!player1.knockbacked) {
-        dPressed = true;
-        player1.velocity.x = 5;
-        player1.offset = 0;
-        break;
-      }
-    case "w":
-      if (
-        player1.position.y + player1.size.y + player1.velocity.y >=
-        myCanvas.height - 40
-      )
-        player1.velocity.y = -15;
-      break;
-    case "s":
-      if (!attackKeyPressed1) {
-        attackKeyPressed1 = true;
-        player1.attackFunction();
-        attackCollision(player1, player2);
-        if (collision) {
-          knockback(player1, player2);
-          player2.hp -= 10;
-          hp2.style.width = player2.hp + "%";
+  //Player 1
+  if (!end) {
+    switch (e.key) {
+      case "a":
+        if (!player1.knockbacked) {
+          aPressed = true;
+          player1.velocity.x = -5;
+          player1.offset = 60;
+          break;
         }
-        collision = false;
-      }
-      break;
+      case "d":
+        if (!player1.knockbacked) {
+          dPressed = true;
+          player1.velocity.x = 5;
+          player1.offset = 0;
+          break;
+        }
+      case "w":
+        if (
+          player1.position.y + player1.size.y + player1.velocity.y >=
+          myCanvas.height - 40
+        )
+          player1.velocity.y = -15;
+        break;
+      case "s":
+        if (!attackKeyPressed1) {
+          attackKeyPressed1 = true;
+          player1.attackFunction();
+          attackCollision(player1, player2);
+          if (collision) {
+            knockback(player1, player2);
+            player2.hp -= 10;
+            hp2.style.width = player2.hp + "%";
+          }
+          collision = false;
+        }
+        break;
+    }
+
+    //Player 2
+    switch (e.key) {
+      case "ArrowLeft":
+        if (!player2.knockbacked) {
+          LeftArrowPressed = true;
+          player2.velocity.x = -5;
+          player2.offset = 60;
+          break;
+        }
+      case "ArrowRight":
+        if (!player2.knockbacked) {
+          RightArrowPressed = true;
+          player2.velocity.x = 5;
+          player2.offset = 0;
+          break;
+        }
+      case "ArrowUp":
+        if (
+          player2.position.y + player2.size.y + player2.velocity.y >=
+          myCanvas.height - 40
+        )
+          player2.velocity.y = -15;
+        break;
+      case "ArrowDown":
+        if (!attackKeyPressed2) {
+          attackKeyPressed2 = true;
+          player2.attackFunction();
+          attackCollision(player2, player1);
+          if (collision) {
+            knockback(player2, player1);
+            player1.hp -= 10;
+            hp1.style.width = player1.hp + "%";
+          }
+          collision = false;
+          break;
+        }
+    }
   }
 });
 document.addEventListener("keyup", (e) => {
+  //Player 1
   switch (e.key) {
     case "a":
       if (!player1.knockbacked) {
@@ -321,47 +368,8 @@ document.addEventListener("keyup", (e) => {
       attackKeyPressed1 = false;
       break;
   }
-});
 
-document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "ArrowLeft":
-      if (!player2.knockbacked) {
-        LeftArrowPressed = true;
-        player2.velocity.x = -5;
-        player2.offset = 60;
-        break;
-      }
-    case "ArrowRight":
-      if (!player2.knockbacked) {
-        RightArrowPressed = true;
-        player2.velocity.x = 5;
-        player2.offset = 0;
-        break;
-      }
-    case "ArrowUp":
-      if (
-        player2.position.y + player2.size.y + player2.velocity.y >=
-        myCanvas.height - 40
-      )
-        player2.velocity.y = -15;
-      break;
-    case "ArrowDown":
-      if (!attackKeyPressed2) {
-        attackKeyPressed2 = true;
-        player2.attackFunction();
-        attackCollision(player2, player1);
-        if (collision) {
-          knockback(player2, player1);
-          player1.hp -= 10;
-          hp1.style.width = player1.hp + "%";
-        }
-        collision = false;
-        break;
-      }
-  }
-});
-document.addEventListener("keyup", (e) => {
+  //Player 2
   switch (e.key) {
     case "ArrowLeft":
       if (!player2.knockbacked) {
