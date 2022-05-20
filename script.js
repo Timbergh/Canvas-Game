@@ -68,7 +68,7 @@ function startGame() {
   }
 
   class Players {
-    constructor({ position, velocity, size, color, offset, hp }) {
+    constructor({ position, velocity, size, color, offset }) {
       this.position = position;
       this.velocity = velocity;
       this.size = size;
@@ -88,14 +88,16 @@ function startGame() {
 
     render() {
       c.fillStyle = this.color;
+      //body
       c.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+      //head
       c.fillRect(
         this.position.x + 30 - this.offset,
         this.position.y,
         this.size.x,
         -50
       );
-
+      //attack
       if (this.attacking) {
         c.fillRect(
           this.attack.position.x - this.offset,
