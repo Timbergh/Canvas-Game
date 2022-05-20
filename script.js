@@ -20,6 +20,8 @@ let maxHp = 100;
 function menuFunction() {
   play.onclick = function () {
     menu.style.display = "none";
+    hp1.style.width = `${maxHp}%`;
+    hp2.style.width = `${maxHp}%`;
     startGame();
   };
 
