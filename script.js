@@ -258,7 +258,6 @@ function startGame() {
         if (player.combo > 3) {
           player.combo = 1;
         }
-        console.log(player.combo);
       }
     } else {
       if (
@@ -273,7 +272,6 @@ function startGame() {
         if (player.combo > 3) {
           player.combo = 1;
         }
-        console.log(player.combo);
       }
     }
   }
